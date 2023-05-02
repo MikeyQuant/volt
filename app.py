@@ -20,17 +20,10 @@ import smtplib
 from flask_bootstrap import Bootstrap
 from datetime import datetime, timedelta
 import os
-
-
 import boto3
 import botocore
 
 app = Flask(__name__,static_folder='' )#,
-    #template_folder= os.path.abspath(r"C:\Users\MIKEB\Desktop\Python\Fuhnance\disciprin\templates"),
-    #template_folder= os.path.abspath(r"/Users/mikebelliveau/Desktop/Python/disciprin/templates"),
-    #static_folder=os.path.abspath(r"C:\Users\MIKEB\Desktop\Python\Fuhnance\disciprin\static"))
-
-    #static_folder=os.path.abspath(r"/Users/mikebelliveau/Desktop/Python/disciprin/static"))
 app.config['SECRET_KEY'] = 'Skinnybelly23!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Skinnybelly23!@database-1.cfawyq16sqrt.us-east-2.rds.amazonaws.com:3306/kb'
 
@@ -47,9 +40,7 @@ app.secret_key = 'sansal54'
 class Config(object):
     ASSETS_ROOT = '/static/assets'
 
-
 class DB:
-
     def __init__(self, engine='mysql://root:Skinnybelly23!@database-1.cfawyq16sqrt.us-east-2.rds.amazonaws.com:3306/kb'):
         self.engine = sql.create_engine(engine)
         self.get_all_users()
@@ -58,9 +49,8 @@ class DB:
         return pd.read_sql('SELECT * from users;', self.engine)
     def set_keys(self,uid,papi,papis,dapi,dapis):
         self.engine.execute(f"update users set papi='{papi}',papis='{papis}',dapi='{dapi}',dapis='{dapis}' where user_id ='{uid}';")
+
 class AP:
-
-
     def __init__(self):
         self.url = "https://api.alpaca.markets"
         prod_headers={"APCA-API-KEY-ID":current_user.papi,
@@ -114,14 +104,14 @@ db = DB()
 def index():
 
     if request.method=='POST':
-        act=request.form["act"]
+        act = request.form["act"]
         ap=AP()
         account=ap.get_account(act)
     else:
         ap = AP()
         account = ap.get_account("d")
 
-    return render_template('home/dashboard.html',user=current_user)
+    return render_template('home/dashboard.html',user=current_user, act=account)
 @app.route("/setKeys",methods=["POST"])
 def set_keys():
     uid=current_user.user_id
@@ -189,5 +179,4 @@ def login():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
-
 
