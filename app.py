@@ -7,7 +7,7 @@ import math
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 import sqlalchemy as sql
-
+import requests
 import sys
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -56,6 +56,22 @@ class DB:
 
     def get_all_users(self):
         return pd.read_sql('SELECT * from users;', self.engine)
+    def set_keys(self,uid,papi,papis,dapi,dapis):
+        self.engine.execute(f"update users set papi='{papi}',papis='{papis}',dapi='{dapi}',dapis='{dapis}' where user_id ='{uid}';")
+class AP:
+
+
+    def __init__(self):
+        self.url = "https://api.alpaca.markets"
+        prod_headers={"APCA-API-KEY-ID":current_user.papi,
+        "APCA-API-SECRET-KEY":current_user.papis}
+        dev_headers = {"APCA-API-KEY-ID": current_user.dapi,
+                        "APCA-API-SECRET-KEY": current_user.dapis}
+        self.h={"p":prod_headers,"d":dev_headers}
+    def get_account(self,act):
+        ep="/v2/account"
+        resp=requests.get(self.url+ep,headers=self.h[act])
+        return resp.json()
 
 
 class Users(UserMixin, sdb.Model):
@@ -64,7 +80,10 @@ class Users(UserMixin, sdb.Model):
     email = sdb.Column(sdb.String(50), unique=True)
     pw = sdb.Column(sdb.String(100))
     cpw = sdb.Column(sdb.String(100))
-
+    papi=sdb.Column(sdb.String(100))
+    papis=sdb.Column(sdb.String(100))
+    dapi=sdb.Column(sdb.String(100))
+    dapis=sdb.Column(sdb.String(100))
     def check_password(self,pw):
         return check_password_hash(self.pw,pw)
     def validate(self, unames, emails, valids):
@@ -91,9 +110,23 @@ class Users(UserMixin, sdb.Model):
 
 db = DB()
 
-@app.route('/')
+@app.route('/',methods=["POST","GET"])
 def index():
-    return render_template('home/dashboard.html')
+
+    if request.method=='POST':
+        act=request.form["act"]
+        ap=AP()
+        account=ap.get_account(act)
+    else:
+        ap = AP()
+        account = ap.get_account("d")
+
+    return render_template('home/dashboard.html',user=current_user)
+@app.route("/setKeys",methods=["POST"])
+def set_keys():
+    uid=current_user.user_id
+    db.set_keys(uid,request.form["papi"],request.form["papis"],request.form["dapi"],request.form["dapis"])
+    return redirect(BASE)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -119,7 +152,7 @@ def signup():
         if len(invalids) == 0:
             new_user = Users(user_id=uuid.uuid1(
             ).hex, email=request.form['email'], pw=hashed_password,
-                             cpw=hashed_password,username=request.form["username"])
+                             cpw=hashed_password,username=request.form["username"],papi="0",papis="0",dapi="0",dapis="0")
 
             sdb.session.add(new_user)
             sdb.session.commit()
