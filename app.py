@@ -32,12 +32,11 @@ app = Flask(__name__,static_folder='' )#,
 
     #static_folder=os.path.abspath(r"/Users/mikebelliveau/Desktop/Python/disciprin/static"))
 app.config['SECRET_KEY'] = 'Skinnybelly23!'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Skinnybelly23@http://database-1.cfawyq16sqrt.us-east-2.rds.amazonaws.com:3306/kb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Skinnybelly23!@database-1.cfawyq16sqrt.us-east-2.rds.amazonaws.com:3306/kb'
 
 sdb = SQLAlchemy(app)
-BASE="http://127.0.0.1:5000/"
+BASE = "http://127.0.0.1:5000/"
 #BASE="http://54.87.214.247:5000/"
-BASE="http://rehabit.today/"
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -51,11 +50,12 @@ class Config(object):
 
 class DB:
 
-    def __init__(self, engine='mysql://root:Skinnybelly23@http://database-1.cfawyq16sqrt.us-east-2.rds.amazonaws.com:3306/kb'):
+    def __init__(self, engine='mysql://root:Skinnybelly23!@database-1.cfawyq16sqrt.us-east-2.rds.amazonaws.com:3306/kb'):
         self.engine = sql.create_engine(engine)
+        self.get_all_users()
 
     def get_all_users(self):
-        return pd.read_sql('SELECT * from users', self.engine)
+        return pd.read_sql('SELECT * from users;', self.engine)
 
 
 class Users(UserMixin, sdb.Model):
@@ -106,7 +106,7 @@ def signup():
 
         hashed_password = generate_password_hash(
             request.form['password'])
-        emails = [x for x in pd.unique(users['email'])]
+        #emails = [x for x in pd.unique(users['email'])]
         invalids=[]
         """if request.form["email"] in emails:
             invalids.append("Email is already in use!")
@@ -137,27 +137,22 @@ def signup():
 
 @app.route("/LogOut", methods=["POST", "GET"])
 def logout():
-
     logout_user()
     return redirect(BASE)
 
 
-@app.route("/LogIn", methods=["POST","GET"])
+@app.route("/Login", methods=["POST", "GET"])
 def login():
-    if request.method=="POST":
-        username = request.form['username']
-        print()
+    if request.method == "POST":
+        #username = request.form['username']
         user = Users.query.filter_by(email=request.form["email"]).first()
-
         if user:
-
-            if check_password_hash(user.pw, request.form["pw"]):
-                login_user(user,force=True,remember=True)
+            if check_password_hash(user.pw, request.form["password"]):
+                login_user(user, force=True, remember=True)
                 return redirect(BASE)
-
-        return render_template("sign-in-fail.html",email=request.form["email"],pw=request.form["pw"],BASE=BASE)
+        return render_template("accounts/login.html", email=request.form["email"], pw=request.form["password"], BASE=BASE, config=Config())
     else:
-        return render_template('accounts/login.html')
+        return render_template('accounts/login.html', email=request.form["email"], pw=request.form["password"], BASE=BASE, config=Config())
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
