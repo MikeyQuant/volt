@@ -1,223 +1,14 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Dashboard {% endblock %} 
+{% block title %} Dashboard {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font: 16px Arial;
-}
-
-/*the container must be positioned relative:*/
-.autocomplete {
-  position: relative;
-  display: inline-block;
-}
-
-input {
-  border: 1px solid transparent;
-  background-color: #f1f1f1;
-  padding: 10px;
-  font-size: 16px;
-}
-
-input[type=text] {
-  background-color: #f1f1f1;
-
-}
-
-input[type=submit] {
-  background-color: DodgerBlue;
-  color: #fff;
-  cursor: pointer;
-}
-
-.autocomplete-items {
-  position: absolute;
-  border: 1px solid #d4d4d4;
-  border-bottom: none;
-  border-top: none;
-  z-index: 99;
-  /*position the autocomplete items to be the same width as the container:*/
-  top: 100%;
-  left: 0;
-  right: 0;
-}
-
-.autocomplete-items div {
-  padding: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  border-bottom: 1px solid #d4d4d4;
-}
-
-/*when hovering an item:*/
-.autocomplete-items div:hover {
-  background-color: #e9e9e9;
-}
-
-/*when navigating through the items using the arrow keys:*/
-.autocomplete-active {
-  background-color: DodgerBlue !important;
-  color: #ffffff;
-}
-</style>
 {% endblock stylesheets %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
 {% block content %}
-
-    <div class="py-4">
-            <div class="accordion accordion-flush" id="accordionFlushExample">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingOne">
-
-      <button class="btn btn-success" onClick="gen_prompt()" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne" >
-        Add Question
-      </button>
-    </h2>
-      <br>
-
-
-    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-      <div class="accordion-body">
-          <div class="card">
-  <div class="card-body">
-          <form action="/addPoll" method="post">
-              <label for="type">Question Type</label>
-              <select onload="gen_prompt()" onchange="gen_prompt()" name="type" id="type">
-
-                  <option value="tr">Top Ranking
-
-                  </option>
-                  <option value="br">Bottom Ranking
-
-                  </option>
-                  <option value="q">Single Answer Question
-
-                  </option>
-
-              </select>
-              <div id="prompt">
-
-                </div>
-            <button type="submit" class="btn btn-secondary">Submit</button>
-          </form>
-  </div></div>
-      </div>
-    </div>
-  </div></div>
-
-
-
-    <div class="row">
-{% for i in items %}
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-primary rounded me-4 me-sm-0">
-                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg>
-                            </div>
-                            <div class="d-sm-none">
-
-                                <h2 class="h5">{{i.t}} {{i.n}} {{i.question}}</h2>
-
-                                <h3 class="fw-extrabold mb-1"></h3>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">{{i.t}} {{i.n}} {{i.question}}</h2>
-                                <h3 class="fw-extrabold mb-2"></h3>
-                            </div>
-                            <small class="d-flex align-items-center text-gray-500">
-                                <button onclick="fetch_auto('{{i.poll_id | safe}}')" type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#poll{{i.poll_id}}">Answer</button>
-                                        <a type="button" class="btn btn-secondary" href="/viewPoll/{{i.poll_id}}">View</a>
-
-                                <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clip-rule="evenodd"></path></svg>
-                                USA
-                            </small> 
-                            <div class="small d-flex mt-1">                               
-                                <div> <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg><span class="text-success fw-bolder">{{i.na}}</span> Answers</div>
-                            </div>
-
-
-                        </div>
-                        <div class="accordion accordion-flush" id="accordionFlushExample">
-  <div class="accordion-item">
-
-
-
-    <div id="poll{{i.poll_id}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-      <div class="accordion-body">
-          <div class="card">
-  <div class="card-body">
-            <h5 class="accordion-header" id="pollh{{i.poll_id}}">{{i.t}} {{i.n}} {{i.question}}</h5>
-
-          <form autocomplete="off" action="/answer/{{i.poll_id}}" method="post">
-              {% if i.n %}
-                    {% for n in range(i.n)%}<span><b>#{{n+1}}</b></span>
-              <div class="autocomplete" style="width:300px;">
-              <input id="A{{n}}" name="A{{n}}" type="text" placeholder="#{{n+1}} Pick" required></br>
-
-              </div>{% endfor %}
-                    {% endif %}
-            <button type="submit" class="btn btn-secondary">Submit</button>
-          </form>
-  </div></div>
-      </div>
-    </div>
-  </div>
-                    </div>
-                </div>
-                </div></div>
-        </div>
-{% endfor %}
-<!--{% for i in items %}
-
-
-
-      Modal
-      <div class="modal fade" id="poll{{i.poll_id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" >{{i.question}}</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
-
-                    </button>
-                </div>
-                <form action="/answer/{{i.post_id}}" method="post">
-
-
-                <div class="modal-body">
-                    {% if i.n %}
-                    {% for n in range(i.n)%}<span><b>#{{n+1}}</b></span>
-                    <input id="A{{n}}" name="A{{n}}" type="text" placeholder="#{{n+1}} Pick" required></br>
-                    {% endfor %}
-                    {% endif %}
-
-
-
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Submit and View Results</button></div></form>
-                </div>
-        </div>
-      </div>
-    </div>
-  </body>
-{% endfor %} -->
-    <div class="row">
+   <div class="row">
         <div class="col-12 col-xl-8">
             <div class="row">
                 <div class="col-12 mb-4">
@@ -236,98 +27,27 @@ input[type=submit] {
                             <table class="table align-items-center table-flush">
                                 <thead class="thead-light">
                                 <tr>
-                                    <th class="border-bottom" scope="col">Page name</th>
-                                    <th class="border-bottom" scope="col">Page Views</th>
-                                    <th class="border-bottom" scope="col">Page Value</th>
-                                    <th class="border-bottom" scope="col">Bounce rate</th>
+                                    <th class="border-bottom" scope="col">Answer</th>
+                                    <th class="border-bottom" scope="col">Ranking Score</th>
+                                    <th class="border-bottom" scope="col">Mentions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
+                                {% for i in ans %}
                                 <tr>
                                     <th class="text-gray-900" scope="row">
-                                        /demo/admin/index.html
+                                        {{i.ans}}
                                     </th>
                                     <td class="fw-bolder text-gray-500">
-                                        3,225
+                                        {{i.score}}
                                     </td>
                                     <td class="fw-bolder text-gray-500">
-                                        $20
+                                        {{i.ta}}
                                     </td>
-                                    <td class="fw-bolder text-gray-500">
-                                        <div class="d-flex">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                                            42,55%
-                                        </div>
-                                    </td>
+
                                 </tr>
-                                <tr>
-                                    <th class="text-gray-900" scope="row">
-                                        /demo/admin/forms.html
-                                    </th>
-                                    <td class="fw-bolder text-gray-500">
-                                        2,987
-                                    </td>
-                                    <td class="fw-bolder text-gray-500">
-                                        0
-                                    </td>
-                                    <td class="fw-bolder text-gray-500">
-                                        <div class="d-flex">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                            43,24%
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-gray-900" scope="row">
-                                        /demo/admin/util.html
-                                    </th>
-                                    <td class="fw-bolder text-gray-500">
-                                        2,844
-                                    </td>
-                                    <td class="fw-bolder text-gray-500">
-                                    294
-                                    </td>
-                                    <td class="fw-bolder text-gray-500">
-                                        <div class="d-flex">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                            32,35%
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-gray-900" scope="row">
-                                        /demo/admin/validation.html
-                                    </th>
-                                    <td class="fw-bolder text-gray-500">
-                                        2,050
-                                    </td>
-                                    <td class="fw-bolder text-gray-500">
-                                        $147
-                                    </td>
-                                    <td class="fw-bolder text-gray-500">
-                                        <div class="d-flex">
-                                            <svg class="icon icon-xs text-danger me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                                            50,87%
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-gray-900" scope="row">
-                                        /demo/admin/modals.html
-                                    </th>
-                                    <td class="fw-bolder text-gray-500">
-                                        1,483
-                                    </td>
-                                    <td class="fw-bolder text-gray-500">
-                                        $19
-                                    </td>
-                                    <td class="fw-bolder text-gray-500">
-                                        <div class="d-flex">
-                                            <svg class="icon icon-xs text-success me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                            26,12%
-                                        </div>
-                                    </td>
-                                </tr>
+                                {% endfor %}
+
                                 </tbody>
                             </table>
                         </div>
@@ -530,10 +250,10 @@ input[type=submit] {
                 <div class="card border-0 shadow">
                     <div class="card-header d-flex flex-row align-items-center flex-0 border-bottom">
                         <div class="d-block">
-                            <div class="h6 fw-normal text-gray mb-2">Total orders</div>
+                            <div class="h6 fw-normal text-gray mb-2">Your Matches</div>
                             <h2 class="h3 fw-extrabold">452</h2>
-                            <div class="small mt-2">                               
-                                <span class="fas fa-angle-up text-success"></span>                                   
+                            <div class="small mt-2">
+                                <span class="fas fa-angle-up text-success"></span>
                                 <span class="text-success fw-bold">18.2%</span>
                             </div>
                         </div>
@@ -549,8 +269,52 @@ input[type=submit] {
                         </div>
                     </div>
                     <div class="card-body p-2">
-                        <div class="ct-chart-ranking ct-golden-section ct-series-a"></div>
-                    </div>
+                        {% if items is not none %}
+  <h2>Top 5 Matches</h2>
+
+  <table class="table"><thead>
+   <tr><th scope="col">Username</th><th scope="col">Match Score</th><th scope="col">View Details</th></tr>
+    </thead>
+      <tbody>
+
+  {% for i in items %}
+  <tr data-toggle="collapse" data-target="details{i.id}}" class="clickable">
+   <td scope="row">{{i.uname}}</td>
+   <td>{{i.points}}</td>
+   <td><button type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#details{{i.id}}">Details</button>
+
+   </td></tr>
+  <div class="accordion accordion-flush" id="detailsu{{i.id}}">
+  <div class="accordion-item">
+
+
+
+    <div id="details{{i.id}}" class="collapse" aria-labelledby="flush-headingOne" >
+      <div class="accordion-body">
+
+                    <h2>Compare Rankings:</h2>
+                    <table class="table"><tr> <th>Ranking</th><th>Your Answer</th><th>Their Answer</th></tr>
+
+                        {% for ii in i.u_resp %}
+
+                        <tr><td>{{loop.index0 + 1}}</td>
+                            <td style="background-color:{{i.col1[loop.index0]}}">{{i.u_resp[loop.index0]}}</td>
+                            <td style="background-color:{{i.col2[loop.index0]}}">{{i.u2_resp[loop.index0]}}</td>
+                        </tr>
+                        {% endfor %}
+
+
+                    </table>
+                    <h3>Total Score: {{i.points}}</h3>
+
+  </div></div></div></div>
+   {% endfor %}
+
+    </tbody>
+
+   </table>
+  {% endif %}
+
                 </div>
             </div>
             <div class="col-12 px-0 mb-4">
@@ -638,7 +402,6 @@ input[type=submit] {
             </div>
         </div>
     </div>
-    </div></div>
                           <!-- Modal Content -->
 
 
@@ -646,132 +409,5 @@ input[type=submit] {
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script>function gen_prompt() {
-var x = document.getElementById("prompt");
-var y = document.getElementById("type");
-
-  if (y.value === "br") {
-    x.innerHTML = '<label for="n">Bottom </label><input  id="n" step="1" name="n" min="1" max="10" type="number"  value="5"><input id="question" class="form-control" name="question" type="text" placeholder="places to go on vacation">';
-
-
-  }
-  if (y.value === "tr") {
-    x.innerHTML = '<label for="n">Top </label><input  id="n" step="1" name="n" min="1" max="10" type="number" value="5"><input class="form-control"id="question" name="question" type="text" placeholder="places to go on vacation">';
-
-  }
-  if (y.value === "q") {
-    x.innerHTML ='<label for="question">My Question is:</label><input  id="n"  name="n" type="hidden" class="form-control" value="1"><input class="form-control"id="question" name="question" type="text" placeholder="Who is your favorite artist?">';
-
-  };
-};
-                </script>
-        <script>
-function autocomplete(inp, arr) {
-  /*the autocomplete function takes two arguments,
-  the text field element and an array of possible autocompleted values:*/
-  var currentFocus;
-  /*execute a function when someone writes in the text field:*/
-  inp.addEventListener("input", function(e) {
-      var a, b, i, val = this.value;
-      /*close any already open lists of autocompleted values*/
-      closeAllLists();
-      if (!val) { return false;}
-      currentFocus = -1;
-      /*create a DIV element that will contain the items (values):*/
-      a = document.createElement("DIV");
-      a.setAttribute("id", this.id + "autocomplete-list");
-      a.setAttribute("class", "autocomplete-items");
-      /*append the DIV element as a child of the autocomplete container:*/
-      this.parentNode.appendChild(a);
-      /*for each item in the array...*/
-      for (i = 0; i < arr.length; i++) {
-        /*check if the item starts with the same letters as the text field value:*/
-        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-          /*create a DIV element for each matching element:*/
-          b = document.createElement("DIV");
-          /*make the matching letters bold:*/
-          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-          b.innerHTML += arr[i].substr(val.length);
-          /*insert a input field that will hold the current array item's value:*/
-          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-          /*execute a function when someone clicks on the item value (DIV element):*/
-          b.addEventListener("click", function(e) {
-              /*insert the value for the autocomplete text field:*/
-              inp.value = this.getElementsByTagName("input")[0].value;
-              /*close the list of autocompleted values,
-              (or any other open lists of autocompleted values:*/
-              closeAllLists();
-          });
-          a.appendChild(b);
-        }
-      }
-  });
-  /*execute a function presses a key on the keyboard:*/
-  inp.addEventListener("keydown", function(e) {
-      var x = document.getElementById(this.id + "autocomplete-list");
-      if (x) x = x.getElementsByTagName("div");
-      if (e.keyCode == 40) {
-        /*If the arrow DOWN key is pressed,
-        increase the currentFocus variable:*/
-        currentFocus++;
-        /*and and make the current item more visible:*/
-        addActive(x);
-      } else if (e.keyCode == 38) { //up
-        /*If the arrow UP key is pressed,
-        decrease the currentFocus variable:*/
-        currentFocus--;
-        /*and and make the current item more visible:*/
-        addActive(x);
-      } else if (e.keyCode == 13) {
-        /*If the ENTER key is pressed, prevent the form from being submitted,*/
-        e.preventDefault();
-        if (currentFocus > -1) {
-          /*and simulate a click on the "active" item:*/
-          if (x) x[currentFocus].click();
-        }
-      }
-  });
-  function addActive(x) {
-    /*a function to classify an item as "active":*/
-    if (!x) return false;
-    /*start by removing the "active" class on all items:*/
-    removeActive(x);
-    if (currentFocus >= x.length) currentFocus = 0;
-    if (currentFocus < 0) currentFocus = (x.length - 1);
-    /*add class "autocomplete-active":*/
-    x[currentFocus].classList.add("autocomplete-active");
-  }
-  function removeActive(x) {
-    /*a function to remove the "active" class from all autocomplete items:*/
-    for (var i = 0; i < x.length; i++) {
-      x[i].classList.remove("autocomplete-active");
-    }
-  }
-  function closeAllLists(elmnt) {
-    /*close all autocomplete lists in the document,
-    except the one passed as an argument:*/
-    var x = document.getElementsByClassName("autocomplete-items");
-    for (var i = 0; i < x.length; i++) {
-      if (elmnt != x[i] && elmnt != inp) {
-        x[i].parentNode.removeChild(x[i]);
-      }
-    }
-  }
-  /*execute a function when someone clicks in the document:*/
-  document.addEventListener("click", function (e) {
-      closeAllLists(e.target);
-  });
-}
-
-
-function fetch_auto(id){
-countries=["Hi","Lo"];
-fetch('/fetch/'+id)
-      .then(response => response.json())
-  .then(data => {console.log(data.n);for (let i = 0; i < data['n']; i++) {
-autocomplete(document.getElementById("A"+i),data.array);
-}})}
-
-      </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 {% endblock javascripts %}
