@@ -54,7 +54,7 @@ class DB:
         for i in range(1,n+1):
             lst += df[~df[f"A{i}"].isin(lst)][f"A{i}"].to_list()
         res = [*set(lst)]
-        res={"n":str(n),"array":res}
+        res={"n":str(n),"array":res,"id":pid}
         return res
     def get_all_users(self):
         return pd.read_sql('SELECT * from users;', self.engine)

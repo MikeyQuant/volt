@@ -166,7 +166,7 @@ input[type=submit] {
               {% if i.n %}
                     {% for n in range(i.n)%}<span><b>#{{n+1}}</b></span>
               <div class="autocomplete" style="width:300px;">
-              <input id="A{{n}}" name="A{{n}}" type="text" placeholder="#{{n+1}} Pick" required></br>
+              <input id="A{{n}}{{i.poll_id}}" name="A{{n}}" type="text" placeholder="#{{n+1}} Pick" required></br>
 
               </div>{% endfor %}
                     {% endif %}
@@ -769,7 +769,7 @@ countries=["Hi","Lo"];
 fetch('/fetch/'+id)
       .then(response => response.json())
   .then(data => {console.log(data.n);for (let i = 0; i < data['n']; i++) {
-autocomplete(document.getElementById("A"+i),data.array);
+autocomplete(document.getElementById("A"+i+data.id),data.array);
 }})}
 
       </script>
